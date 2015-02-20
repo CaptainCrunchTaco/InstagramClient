@@ -16,6 +16,16 @@ import java.util.List;
  * Created by Ariel on 2/17/15.
  */
 public class InstagramPhotosAdapter extends ArrayAdapter<InstagramPhoto> {
+
+    // View lookup cache
+    private static class ViewHolder {
+        TextView tvCaption;
+        TextView tvUsername;
+        TextView tvTimeStamp;
+        TextView tvLikes;
+        ImageView ivPhoto;
+    }
+
     //What data do we need from the activity
     //Context, Data Source
     public InstagramPhotosAdapter(Context context, List<InstagramPhoto> objects) {
@@ -26,31 +36,37 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstagramPhoto> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
         // Get the data item for this position
         InstagramPhoto photo = getItem(position);
-        // Check if we are using a recycle view, if not we need to inflate
+        // Check if we are using a recycled view, if not we need to inflate
+        //convertView is the old view that we want to reuse, if it has stuff in it
         if (convertView == null) {
+            viewHolder = new ViewHolder();
             // create a new view from template
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_photo, parent, false);
+            // Lookup the views for populating the data (image,caption)
+            viewHolder.tvCaption = (TextView) convertView.findViewById(R.id.tvCaption);
+            viewHolder.tvUsername = (TextView) convertView.findViewById(R.id.tvUsername);
+            viewHolder.tvTimeStamp = (TextView) convertView.findViewById(R.id.tvTimeStamp);
+            viewHolder.tvLikes = (TextView) convertView.findViewById(R.id.tvLikes);
+            viewHolder.ivPhoto = (ImageView) convertView.findViewById(R.id.ivPhoto);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        // Lookup the views for populating the data (image,caption)
-        TextView tvCaption = (TextView) convertView.findViewById(R.id.tvCaption);
-        TextView tvUsername = (TextView) convertView.findViewById(R.id.tvUsername);
-        TextView tvTimeStamp = (TextView) convertView.findViewById(R.id.tvTimeStamp);
-        TextView tvLikes = (TextView) convertView.findViewById(R.id.tvLikes);
-        ImageView ivPhoto = (ImageView) convertView.findViewById(R.id.ivPhoto);
         // Insert the model data into eachh of the view items
-        tvCaption.setText(photo.caption);
+        viewHolder.tvCaption.setText(photo.caption);
         // Clear out imageview
-        ivPhoto.setImageResource(0);
+        viewHolder.ivPhoto.setImageResource(0);
         // Insert Username
-        tvUsername.setText(photo.username);
+        viewHolder.tvUsername.setText(photo.username);
         //Insert Time Stamp
-        tvTimeStamp.setText(photo.timeStamp);
+        viewHolder.tvTimeStamp.setText(photo.timeStamp);
         //Insert likes
-        tvLikes.setText(Integer.toString(photo.likesCount) + " likes");
+        viewHolder.tvLikes.setText(Integer.toString(photo.likesCount) + " likes");
         // Insert image using picasso
-        Picasso.with(getContext()).load(photo.imageUrl).into(ivPhoto);
+        Picasso.with(getContext()).load(photo.imageUrl).into(viewHolder.ivPhoto);
         // Return the created item as a view
         return convertView;
     }
