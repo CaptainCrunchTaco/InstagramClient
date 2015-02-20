@@ -1,6 +1,7 @@
 package com.example.android.instagramclient;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,11 +23,34 @@ public class PhotosActivity extends ActionBarActivity {
     public static final String CLIENT_ID = "d08b6d2f8db04a8db385367f29c0d993";
     private ArrayList<InstagramPhoto> photos;
     private InstagramPhotosAdapter aPhotos;
+    private SwipeRefreshLayout swipeContainer;
+    private boolean refreshing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
+        //Set up refresh
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                refreshing = true;
+                fetchPopularPhotos();
+//                fetchTimelineAsync(0);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+
         // SEND OUT API REQUEST TO POPULAR PHOTOS
         photos = new ArrayList<>();
         //Create the adapter linking it to the source
@@ -38,6 +62,24 @@ public class PhotosActivity extends ActionBarActivity {
         //Fetch the popularphotos
         fetchPopularPhotos();
     }
+
+//    public void fetchTimelineAsync(int page) {
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        client.getHomeTimeline(0, new JsonHttpResponseHandler() {
+//            public void onSuccess(JSONArray json) {
+//                // Remember to CLEAR OUT old items before appending in the new ones
+//                aPhotos.clear();
+//                // ...the data has come back, add new items to your adapter...
+//                fetchPopularPhotos();
+//                // Now we call setRefreshing(false) to signal refresh has finished
+//                swipeContainer.setRefreshing(false);
+//            }
+//
+//            public void onFailure(Throwable e) {
+//                Log.d("DEBUG", "Fetch timeline error: " + e.toString());
+//            }
+//        });
+//    }
 
     //Trigger API request
     public void fetchPopularPhotos() {
@@ -65,6 +107,10 @@ public class PhotosActivity extends ActionBarActivity {
                 //Caption: { "data" => [x] => "caption" => "text"}
                 //Author: { "data" => [x] => "user" => "username"}
                 //Iterate each of the photo items and decode the item into java object
+                if(refreshing) {
+                    aPhotos.clear();
+                }
+
                 JSONArray photosJSON = null;
                 try {
                     photosJSON = response.getJSONArray("data"); // array of posts
@@ -85,9 +131,14 @@ public class PhotosActivity extends ActionBarActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+                if(refreshing) {
+                    swipeContainer.setRefreshing(false);
+                }
                 //callback
                 aPhotos.notifyDataSetChanged();
+                if(refreshing) {
+                    refreshing = false;
+                }
             }
 
             //onFailure
