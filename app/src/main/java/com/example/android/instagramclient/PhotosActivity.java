@@ -17,6 +17,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static android.text.format.DateUtils.SECOND_IN_MILLIS;
+import static android.text.format.DateUtils.getRelativeTimeSpanString;
+
 
 public class PhotosActivity extends ActionBarActivity {
 
@@ -24,6 +27,7 @@ public class PhotosActivity extends ActionBarActivity {
     private ArrayList<InstagramPhoto> photos;
     private InstagramPhotosAdapter aPhotos;
     private SwipeRefreshLayout swipeContainer;
+    //refreshing differentiates between startup actions and when you refresh
     private boolean refreshing = false;
 
     @Override
@@ -36,12 +40,8 @@ public class PhotosActivity extends ActionBarActivity {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 refreshing = true;
                 fetchPopularPhotos();
-//                fetchTimelineAsync(0);
             }
         });
         // Configure the refreshing colors
@@ -63,23 +63,7 @@ public class PhotosActivity extends ActionBarActivity {
         fetchPopularPhotos();
     }
 
-//    public void fetchTimelineAsync(int page) {
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        client.getHomeTimeline(0, new JsonHttpResponseHandler() {
-//            public void onSuccess(JSONArray json) {
-//                // Remember to CLEAR OUT old items before appending in the new ones
-//                aPhotos.clear();
-//                // ...the data has come back, add new items to your adapter...
-//                fetchPopularPhotos();
-//                // Now we call setRefreshing(false) to signal refresh has finished
-//                swipeContainer.setRefreshing(false);
-//            }
-//
-//            public void onFailure(Throwable e) {
-//                Log.d("DEBUG", "Fetch timeline error: " + e.toString());
-//            }
-//        });
-//    }
+
 
     //Trigger API request
     public void fetchPopularPhotos() {
@@ -106,10 +90,12 @@ public class PhotosActivity extends ActionBarActivity {
                 //URL: { "data" => [x] => "images" => "standard_resolution" => "url"}
                 //Caption: { "data" => [x] => "caption" => "text"}
                 //Author: { "data" => [x] => "user" => "username"}
-                //Iterate each of the photo items and decode the item into java object
+                // Remember to CLEAR OUT old items before appending in the new ones
+                //Otherwise, you're gonna just keep adding to the adapter!
                 if(refreshing) {
                     aPhotos.clear();
                 }
+                //Iterate each of the photo items and decode the item into java object
 
                 JSONArray photosJSON = null;
                 try {
@@ -126,19 +112,21 @@ public class PhotosActivity extends ActionBarActivity {
                         photo.imageUrl = photoJSON.getJSONObject("images").getJSONObject("standard_resolution").getString("url");
                         photo.imageHeight = photoJSON.getJSONObject("images").getJSONObject("standard_resolution").getInt("height");
                         photo.likesCount = photoJSON.getJSONObject("likes").getInt("count");
+                        photoJSON.getString("created_time");
+                        photo.timeStamp = getRelativeTimeSpanString(Long.parseLong(photoJSON.getString("created_time")) * 1000, System.currentTimeMillis(), SECOND_IN_MILLIS);
                         photos.add(photo);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                // Now we call setRefreshing(false) to signal refresh has finished
+                //
                 if(refreshing) {
                     swipeContainer.setRefreshing(false);
+                    refreshing = false;
                 }
                 //callback
                 aPhotos.notifyDataSetChanged();
-                if(refreshing) {
-                    refreshing = false;
-                }
             }
 
             //onFailure
