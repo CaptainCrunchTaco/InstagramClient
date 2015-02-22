@@ -112,6 +112,7 @@ public class PhotosActivity extends ActionBarActivity {
                         photo.imageUrl = photoJSON.getJSONObject("images").getJSONObject("standard_resolution").getString("url");
                         photo.imageHeight = photoJSON.getJSONObject("images").getJSONObject("standard_resolution").getInt("height");
                         photo.likesCount = photoJSON.getJSONObject("likes").getInt("count");
+                        photo.profilePicture = photoJSON.getJSONObject("user").getString("profile_picture");
                         photoJSON.getString("created_time");
                         photo.timeStamp = getRelativeTimeSpanString(Long.parseLong(photoJSON.getString("created_time")) * 1000, System.currentTimeMillis(), SECOND_IN_MILLIS);
                         photos.add(photo);
@@ -150,12 +151,12 @@ public class PhotosActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

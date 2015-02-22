@@ -20,6 +20,8 @@ android {
 }
 
 dependencies {
+    //Rounded Image View
+    compile 'com.makeramen:roundedimageview:1.5.0'
     //Load remote images from the network into image views
     compile 'com.squareup.picasso:picasso:2.5.0'
     //Sends network request for JSON

@@ -6,10 +6,13 @@
         android:layout_height="wrap_content"
         android:text="Username"
         android:id="@+id/tvUsername"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:textSize="30sp"
         android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/ivProfile"
+        android:layout_toEndOf="@+id/ivProfile"
+        android:textColor="@color/teal700"
         android:textStyle="bold" />
         <!--android:textColor="@color/main_blue"-->
 
@@ -35,15 +38,20 @@
         android:layout_below="@+id/tvLikes"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="20dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/tvTimeStamp"
-        android:textSize="20sp"
-        android:layout_above="@+id/ivPhoto"
+        android:textSize="15sp"
+        android:paddingRight="10dp"
+        android:layout_alignBaseline="@+id/tvUsername"
+        android:layout_alignBottom="@+id/tvUsername"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -52,9 +60,36 @@
         android:layout_height="wrap_content"
         android:text="Likes"
         android:id="@+id/tvLikes"
+        android:textSize="20sp"
+        android:paddingLeft="5dp"
+        android:paddingTop="7dp"
+        android:paddingBottom="5dp"
+        android:layout_below="@+id/ivPhoto"
+        android:layout_toRightOf="@+id/imageView"
+        android:layout_toEndOf="@+id/imageView" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/ivProfile"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignBottom="@+id/tvTimeStamp"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp" />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/imageView"
         android:layout_below="@+id/ivPhoto"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="20sp" />
+        android:src="@drawable/heart_icon"
+        android:paddingLeft="10dp"
+        android:paddingTop="7dp"
+        android:paddingBottom="5dp"
+        android:layout_alignBottom="@+id/tvLikes" />
 
 </RelativeLayout>

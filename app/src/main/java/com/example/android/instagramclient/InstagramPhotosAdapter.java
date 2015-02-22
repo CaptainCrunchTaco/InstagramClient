@@ -8,7 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.makeramen.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ import java.util.List;
  */
 public class InstagramPhotosAdapter extends ArrayAdapter<InstagramPhoto> {
 
+    private static Transformation transformation;
+
     // View lookup cache
     private static class ViewHolder {
         TextView tvCaption;
@@ -24,6 +28,7 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstagramPhoto> {
         TextView tvTimeStamp;
         TextView tvLikes;
         ImageView ivPhoto;
+        ImageView ivProfile;
     }
 
     //What data do we need from the activity
@@ -42,6 +47,7 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstagramPhoto> {
         // Check if we are using a recycled view, if not we need to inflate
         //convertView is the old view that we want to reuse, if it has stuff in it
         if (convertView == null) {
+//            screenWidth = DeviceDimensionsHelper.getDisplayWidth(getContext());
             viewHolder = new ViewHolder();
             // create a new view from template
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_photo, parent, false);
@@ -51,14 +57,21 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstagramPhoto> {
             viewHolder.tvTimeStamp = (TextView) convertView.findViewById(R.id.tvTimeStamp);
             viewHolder.tvLikes = (TextView) convertView.findViewById(R.id.tvLikes);
             viewHolder.ivPhoto = (ImageView) convertView.findViewById(R.id.ivPhoto);
+            viewHolder.ivProfile = (ImageView) convertView.findViewById(R.id.ivProfile);
+            transformation = new RoundedTransformationBuilder()
+                    .cornerRadiusDp(50)
+                    .oval(false)
+                    .build();
             convertView.setTag(viewHolder);
         } else {
+            //Allows the view to "remember" the ViewHolder
             viewHolder = (ViewHolder) convertView.getTag();
         }
         // Insert the model data into eachh of the view items
         viewHolder.tvCaption.setText(photo.caption);
-        // Clear out imageview
+        // Clear out imageviews
         viewHolder.ivPhoto.setImageResource(0);
+        viewHolder.ivProfile.setImageResource(0);
         // Insert Username
         viewHolder.tvUsername.setText(photo.username);
         //Insert Time Stamp
@@ -67,6 +80,8 @@ public class InstagramPhotosAdapter extends ArrayAdapter<InstagramPhoto> {
         viewHolder.tvLikes.setText(Integer.toString(photo.likesCount) + " likes");
         // Insert image using picasso
         Picasso.with(getContext()).load(photo.imageUrl).into(viewHolder.ivPhoto);
+        //Profile Picture
+        Picasso.with(getContext()).load(photo.profilePicture).transform(transformation).into(viewHolder.ivProfile);
         // Return the created item as a view
         return convertView;
     }
